@@ -6,360 +6,131 @@
 <title>🐝 Buzzer Score — Deteksi Akun Buzzer Twitter Indonesia</title>
 <style>
 :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a2e;
-    --surface2: #16213e;
+    --bg: #0a0a0f;
+    --surface: #13131f;
+    --surface2: #1a1a2e;
+    --surface3: #222240;
     --accent: #e94560;
     --accent2: #0f3460;
-    --text: #eee;
-    --text-dim: #888;
-    --green: #00c853;
+    --accent-glow: rgba(233,69,96,0.15);
+    --text: #eaeaea;
+    --text-dim: #777;
+    --text-muted: #555;
+    --green: #00e676;
     --yellow: #ffd600;
     --red: #ff1744;
     --orange: #ff9100;
     --blue: #448aff;
-    --radius: 12px;
+    --purple: #b388ff;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+    line-height: 1.5;
 }
-
 .header {
-    background: linear-gradient(135deg, var(--surface2), var(--accent2));
-    padding: 24px 32px;
+    background: linear-gradient(135deg, var(--surface2) 0%, var(--accent2) 50%, #1a0a20 100%);
+    padding: 28px 32px;
     border-bottom: 2px solid var(--accent);
+    position: relative;
+    overflow: hidden;
 }
-
-.header h1 {
-    font-size: 1.8em;
-    margin-bottom: 4px;
+.header::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
 }
-
-.header p {
-    color: var(--text-dim);
-    font-size: 0.95em;
-}
+.header h1 { font-size: 1.9em; margin-bottom: 4px; position: relative; z-index: 1; }
+.header p { color: var(--text-dim); font-size: 0.95em; position: relative; z-index: 1; }
+.header .version { position: absolute; right: 32px; top: 28px; color: var(--text-muted); font-size: 0.8em; z-index: 1; }
 
 .container {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 400px 1fr;
     gap: 0;
     min-height: calc(100vh - 100px);
 }
-
 .sidebar {
     background: var(--surface);
     padding: 24px;
-    border-right: 1px solid #333;
+    border-right: 1px solid #222;
     overflow-y: auto;
+    max-height: calc(100vh - 100px);
 }
-
 .main {
-    padding: 24px;
+    padding: 28px;
     overflow-y: auto;
+    max-height: calc(100vh - 100px);
 }
-
-.section {
-    margin-bottom: 24px;
-}
-
+.section { margin-bottom: 24px; }
 .section h3 {
     color: var(--accent);
-    font-size: 0.85em;
+    font-size: 0.8em;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     margin-bottom: 12px;
+    font-weight: 700;
 }
-
 label {
     display: block;
-    font-size: 0.85em;
+    font-size: 0.82em;
     color: var(--text-dim);
     margin-bottom: 4px;
+    font-weight: 500;
 }
-
 input[type="text"], input[type="number"], textarea, select {
     width: 100%;
     background: var(--bg);
-    border: 1px solid #333;
+    border: 1px solid #2a2a3a;
     color: var(--text);
     padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 0.95em;
+    border-radius: 10px;
+    font-size: 0.92em;
     margin-bottom: 12px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
 }
-
 input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
 }
-
-.slider-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.slider-row label {
-    min-width: 140px;
-    margin: 0;
-    font-size: 0.85em;
-}
-
-.slider-row input[type="range"] {
-    flex: 1;
-    accent-color: var(--accent);
-}
-
-.slider-row .val {
-    min-width: 50px;
-    text-align: right;
-    font-family: monospace;
-    font-size: 0.9em;
-    color: var(--blue);
-}
-
 .btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), #c2185b);
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 1em;
-    font-weight: 600;
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
     width: 100%;
     justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
-
-.btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
 .btn:active { transform: translateY(0); }
-.btn.secondary { background: var(--accent2); }
+.btn.secondary { background: linear-gradient(135deg, var(--accent2), #1a237e); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Score Gauge */
-.gauge-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 24px 0;
-}
-
-.gauge {
-    position: relative;
-    width: 220px;
-    height: 110px;
-    overflow: hidden;
-}
-
-.gauge-bg, .gauge-fill {
-    position: absolute;
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    border: 20px solid;
-    border-color: #333 #333 transparent transparent;
-    transform: rotate(-225deg);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.gauge-fill {
-    border-color: var(--green) var(--green) transparent transparent;
-    clip-path: inset(0 0 50% 0);
-}
-
-.gauge-label {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.8em;
-    font-weight: 800;
-}
-
-.gauge-label small {
-    font-size: 0.35em;
-    color: var(--text-dim);
-}
-
-.classification {
-    font-size: 1.2em;
-    font-weight: 700;
-    margin-top: 8px;
-    padding: 6px 20px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Signal Bars */
-.signal {
-    margin-bottom: 16px;
-}
-
-.signal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-}
-
-.signal-name {
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-.signal-score {
-    font-family: monospace;
-    font-size: 0.85em;
-    color: var(--blue);
-}
-
-.signal-bar {
-    height: 8px;
-    background: #222;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.signal-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.6s ease, background 0.3s;
-}
-
-.signal-detail {
-    font-size: 0.75em;
-    color: var(--text-dim);
-    margin-top: 4px;
-}
-
-/* Account Info */
-.account-card {
-    background: var(--surface2);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid #333;
-}
-
-.account-card .username {
-    font-size: 1.2em;
-    font-weight: 700;
-    color: var(--blue);
-}
-
-.account-card .name {
-    color: var(--text-dim);
-    font-size: 0.9em;
-}
-
-.account-card .bio {
-    margin-top: 8px;
-    font-size: 0.85em;
-    color: var(--text-dim);
-    font-style: italic;
-}
-
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 12px;
-}
-
-.metric {
-    text-align: center;
-    padding: 8px;
-    background: var(--bg);
-    border-radius: 8px;
-}
-
-.metric .num {
-    font-size: 1.3em;
-    font-weight: 700;
-}
-
-.metric .lbl {
-    font-size: 0.7em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-}
-
-/* Manual Mode */
 .manual-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 8px 12px;
 }
-
-.manual-grid label {
-    grid-column: 1 / -1;
-}
-
-/* Batch Results */
-.batch-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
-}
-
-.batch-table th, .batch-table td {
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid #333;
-    font-size: 0.85em;
-}
-
-.batch-table th {
-    color: var(--text-dim);
-    text-transform: uppercase;
-    font-size: 0.75em;
-    letter-spacing: 0.5px;
-}
-
-.batch-table tr:hover {
-    background: var(--surface);
-}
-
-.badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    font-weight: 600;
-}
-
-.badge-clean { background: rgba(0,200,83,0.15); color: var(--green); }
-.badge-low { background: rgba(255,214,0,0.15); color: var(--yellow); }
-.badge-suspicious { background: rgba(255,145,0,0.15); color: var(--orange); }
-.badge-probable { background: rgba(255,23,68,0.15); color: var(--red); }
-.badge-buzzer { background: rgba(255,23,68,0.3); color: #ff5252; }
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-dim);
-}
-
-.empty-state .icon { font-size: 3em; margin-bottom: 16px; }
 
 /* Tabs */
 .tabs {
@@ -367,132 +138,290 @@ input:focus, textarea:focus, select:focus {
     gap: 2px;
     margin-bottom: 20px;
     background: var(--bg);
-    border-radius: 10px;
-    padding: 3px;
+    border-radius: 12px;
+    padding: 4px;
 }
-
 .tab {
     flex: 1;
-    padding: 10px;
+    padding: 10px 6px;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.85em;
-    font-weight: 500;
+    font-size: 0.82em;
+    font-weight: 600;
     transition: all 0.2s;
     color: var(--text-dim);
     border: none;
     background: none;
 }
+.tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.tab:hover:not(.active) { color: var(--text); }
 
-.tab.active {
-    background: var(--surface2);
-    color: var(--text);
+/* Gauge */
+.gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 28px 0 20px;
+}
+.classification-badge {
+    font-size: 1.15em;
+    font-weight: 800;
+    margin-top: 10px;
+    padding: 8px 24px;
+    border-radius: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: fadeInUp 0.5s ease;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.tab:hover:not(.active) {
-    color: var(--text);
+/* Signal bars */
+.signal { margin-bottom: 18px; }
+.signal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.signal-name { font-size: 0.88em; font-weight: 600; }
+.signal-score { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85em; color: var(--blue); font-weight: 700; }
+.signal-bar {
+    height: 10px;
+    background: #1a1a2a;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+.signal-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.7s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+    position: relative;
+}
+.signal-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+}
+.signal-detail {
+    font-size: 0.73em;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
 }
 
-/* Explanation Card */
+/* Account card */
+.account-card {
+    background: linear-gradient(135deg, var(--surface2), var(--surface3));
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 22px;
+    border: 1px solid #2a2a40;
+    box-shadow: var(--shadow);
+}
+.account-card .username { font-size: 1.25em; font-weight: 800; color: var(--blue); }
+.account-card .bio {
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: var(--text-dim);
+    font-style: italic;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent2);
+}
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+}
+.metric {
+    text-align: center;
+    padding: 10px 6px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    border: 1px solid #1a1a2e;
+}
+.metric .num { font-size: 1.35em; font-weight: 800; }
+.metric .lbl { font-size: 0.65em; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* Batch table */
+.batch-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 16px;
+}
+.batch-table th, .batch-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #1a1a2e;
+    font-size: 0.85em;
+}
+.batch-table th {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.7em;
+    letter-spacing: 1px;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+}
+.batch-table tr { transition: background 0.15s; }
+.batch-table tr:hover { background: var(--surface); }
+.batch-table tr.clickable { cursor: pointer; }
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 0.78em;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.badge-clean { background: rgba(0,230,118,0.12); color: var(--green); }
+.badge-low { background: rgba(255,214,0,0.12); color: var(--yellow); }
+.badge-suspicious { background: rgba(255,145,0,0.12); color: var(--orange); }
+.badge-probable { background: rgba(255,23,68,0.12); color: var(--red); }
+.badge-buzzer { background: rgba(255,23,68,0.25); color: #ff5252; border: 1px solid rgba(255,23,68,0.3); }
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+}
+.empty-state .icon { font-size: 4em; margin-bottom: 16px; filter: drop-shadow(0 4px 12px rgba(233,69,96,0.3)); }
+
+/* Explain card */
 .explain-card {
     background: var(--surface2);
     border-radius: var(--radius);
-    padding: 16px;
-    margin-top: 16px;
-    border-left: 3px solid var(--accent);
+    padding: 18px;
+    margin-top: 18px;
+    border-left: 4px solid var(--accent);
+    box-shadow: var(--shadow);
+}
+.explain-card h4 { font-size: 0.9em; margin-bottom: 10px; color: var(--accent); }
+.explain-card p { font-size: 0.82em; color: var(--text-dim); line-height: 1.6; }
+
+/* Checkbox style */
+.check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.88em;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+.check-row:hover { background: rgba(255,255,255,0.03); }
+.check-row input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
 }
 
-.explain-card h4 {
-    font-size: 0.9em;
-    margin-bottom: 8px;
-    color: var(--accent);
-}
-
-.explain-card p {
-    font-size: 0.8em;
-    color: var(--text-dim);
-    line-height: 1.5;
-}
-
-.tooltip {
-    position: relative;
-    cursor: help;
-}
-
-.loading {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--text-dim);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 800px) {
-    .container { grid-template-columns: 1fr; }
-    .sidebar { border-right: none; border-bottom: 1px solid #333; }
-    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Weight Editor */
+/* Weight editor */
 .weight-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
-    font-size: 0.85em;
+    margin-bottom: 10px;
+    font-size: 0.82em;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 0.15s;
 }
-.weight-row label { flex: 1; margin: 0; min-width: 0; }
-.weight-row input[type="range"] { width: 80px; accent-color: var(--accent); margin: 0; }
-.weight-row .wval { min-width: 24px; text-align: right; font-family: monospace; color: var(--blue); font-size: 0.85em; }
+.weight-row:hover { background: rgba(255,255,255,0.02); }
+.weight-row label { flex: 1; margin: 0; min-width: 0; font-size: 0.88em; }
+.weight-row input[type="range"] { width: 90px; accent-color: var(--accent); margin: 0; }
+.weight-row .wval {
+    min-width: 28px;
+    text-align: right;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--blue);
+    font-size: 0.88em;
+    font-weight: 700;
+}
+
+/* Export button row */
+.btn-row { display: flex; gap: 8px; margin-top: 12px; }
+.btn-row .btn { flex: 1; font-size: 0.8em; padding: 10px 12px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    font-size: 0.88em;
+    font-weight: 600;
+    z-index: 1000;
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s forwards;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+@media (max-width: 860px) {
+    .container { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid #222; max-height: none; }
+    .main { max-height: none; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .header .version { position: static; display: block; margin-top: 4px; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
     <h1>🐝 Buzzer Score</h1>
-    <p>Deteksi Akun Buzzer Twitter Indonesia — 9 sinyal perilaku &middot; <a href="https://github.com/ainunnajib/buzzer-score" style="color:var(--accent);text-decoration:none;">GitHub ↗</a></p>
+    <p>Analisis probabilitas akun buzzer Twitter Indonesia — 9 sinyal perilaku</p>
+    <span class="version">v1.0.0 — Open Source</span>
 </div>
 
 <div class="container">
     <div class="sidebar">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('manual')">📝 Manual</button>
-            <button class="tab" onclick="switchTab('batch')">📊 Batch</button>
-            <button class="tab" onclick="switchTab('weights')">⚙️ Weights</button>
+            <button class="tab active" onclick="switchTab('manual', this)">📝 Manual</button>
+            <button class="tab" onclick="switchTab('batch', this)">📊 Batch</button>
+            <button class="tab" onclick="switchTab('weights', this)">⚙️ Bobot</button>
         </div>
 
         <!-- Manual Input Tab -->
         <div id="tab-manual">
             <div class="section">
-                <h3>Account Info</h3>
+                <h3>📋 Info Akun</h3>
                 <label>Username</label>
-                <input type="text" id="username" placeholder="@contoh_akun" value="">
+                <input type="text" id="username" placeholder="@contoh_akun">
 
                 <div class="manual-grid">
-                    <div>
-                        <label>Followers</label>
-                        <input type="number" id="followers" value="150" min="0">
-                    </div>
-                    <div>
-                        <label>Following</label>
-                        <input type="number" id="following" value="2500" min="0">
-                    </div>
-                    <div>
-                        <label>Total Tweets</label>
-                        <input type="number" id="tweet_count" value="15000" min="0">
-                    </div>
-                    <div>
-                        <label>Listed Count</label>
-                        <input type="number" id="listed" value="2" min="0">
-                    </div>
+                    <div><label>Followers</label><input type="number" id="followers" value="150" min="0"></div>
+                    <div><label>Following</label><input type="number" id="following" value="2500" min="0"></div>
+                    <div><label>Total Tweets</label><input type="number" id="tweet_count" value="15000" min="0"></div>
+                    <div><label>Listed Count</label><input type="number" id="listed" value="2" min="0"></div>
                 </div>
 
-                <label>Account Age (days)</label>
+                <label>Umur Akun (hari)</label>
                 <input type="number" id="age_days" value="120" min="1">
 
                 <label>Bio</label>
@@ -500,34 +429,19 @@ input:focus, textarea:focus, select:focus {
             </div>
 
             <div class="section">
-                <h3>Content Analysis</h3>
+                <h3>📊 Analisis Konten</h3>
                 <div class="manual-grid">
+                    <div><label>Avg Likes/tweet</label><input type="number" id="avg_likes" value="2" min="0"></div>
+                    <div><label>Avg RTs/tweet</label><input type="number" id="avg_rts" value="1" min="0"></div>
+                    <div><label>RT% (dari 20 sampel)</label><input type="number" id="rt_pct" value="75" min="0" max="100"></div>
+                    <div><label>Konten unik %</label><input type="number" id="unique_pct" value="40" min="0" max="100"></div>
+                    <div><label>Hashtag politik (per 20)</label><input type="number" id="pol_hashtags" value="8" min="0"></div>
                     <div>
-                        <label>Avg Likes/tweet</label>
-                        <input type="number" id="avg_likes" value="2" min="0">
-                    </div>
-                    <div>
-                        <label>Avg RTs/tweet</label>
-                        <input type="number" id="avg_rts" value="1" min="0">
-                    </div>
-                    <div>
-                        <label>RT% (dari 20 sample)</label>
-                        <input type="number" id="rt_pct" value="75" min="0" max="100">
-                    </div>
-                    <div>
-                        <label>Unique tweets %</label>
-                        <input type="number" id="unique_pct" value="40" min="0" max="100">
-                    </div>
-                    <div>
-                        <label>Political hashtags (per 20)</label>
-                        <input type="number" id="pol_hashtags" value="8" min="0">
-                    </div>
-                    <div>
-                        <label>Posting hours spread</label>
+                        <label>Pola posting</label>
                         <select id="posting_pattern">
-                            <option value="normal">Normal (human-like)</option>
-                            <option value="odd">Mostly odd hours</option>
-                            <option value="24h" selected>24/7 posting</option>
+                            <option value="normal">Normal (manusia)</option>
+                            <option value="odd">Jam-jam aneh</option>
+                            <option value="24h" selected>24/7 non-stop</option>
                             <option value="burst">Burst patterns</option>
                         </select>
                     </div>
@@ -535,47 +449,50 @@ input:focus, textarea:focus, select:focus {
             </div>
 
             <div class="section">
-                <h3>Profile Flags</h3>
-                <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                    <input type="checkbox" id="default_avatar" checked> Default avatar (egg/silhouette)
+                <h3>🚩 Flag Profil</h3>
+                <label class="check-row">
+                    <input type="checkbox" id="default_avatar" checked> Avatar default (egg/silhouette)
                 </label>
-                <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                    <input type="checkbox" id="generic_name" checked> Generic username (user12345678)
+                <label class="check-row">
+                    <input type="checkbox" id="generic_name" checked> Username generik (user12345678)
                 </label>
-                <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                    <input type="checkbox" id="no_bio"> No bio
+                <label class="check-row">
+                    <input type="checkbox" id="no_bio"> Tidak ada bio
                 </label>
             </div>
 
-            <button class="btn" onclick="analyze()">🔍 Analyze Buzzer Score</button>
+            <button class="btn" onclick="analyze()">🔍 Analisis Buzzer Score</button>
         </div>
 
         <!-- Batch Tab -->
         <div id="tab-batch" style="display:none">
             <div class="section">
-                <h3>Batch Analysis</h3>
+                <h3>📊 Analisis Batch</h3>
                 <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
-                    Paste JSON results from <code>buzzer-score.sh --batch --json</code>
+                    Paste output JSON dari <code>buzzer_score.py --json</code>
                 </p>
-                <textarea id="batch_json" rows="12" placeholder='[{"username":"user1", ...}, ...]'></textarea>
-                <button class="btn" onclick="loadBatch()">📊 Load Batch Results</button>
+                <textarea id="batch_json" rows="14" placeholder='[{"username":"user1","buzzer_score":{"probability":82,...}}, ...]'></textarea>
+                <button class="btn" onclick="loadBatch()">📊 Muat Hasil Batch</button>
                 <br><br>
-                <button class="btn secondary" onclick="loadSampleBatch()">📋 Load Sample Data</button>
+                <button class="btn secondary" onclick="loadSampleBatch()">📋 Muat Data Sampel</button>
             </div>
         </div>
 
         <!-- Weights Tab -->
         <div id="tab-weights" style="display:none">
             <div class="section">
-                <h3>Signal Weights</h3>
-                <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:16px;">
-                    Adjust the maximum weight for each scoring signal.
+                <h3>⚙️ Bobot Sinyal</h3>
+                <p style="font-size:0.78em;color:var(--text-dim);margin-bottom:16px;">
+                    Sesuaikan bobot maksimum tiap sinyal scoring. Total default = 100.
                 </p>
                 <div id="weight-controls"></div>
+                <div style="text-align:right;margin-top:8px;font-size:0.82em;">
+                    Total: <strong id="weight-total" style="color:var(--blue)">100</strong>
+                </div>
                 <br>
-                <button class="btn secondary" onclick="resetWeights()">↺ Reset to Default</button>
+                <button class="btn secondary" onclick="resetWeights()">↺ Reset ke Default</button>
                 <br><br>
-                <button class="btn" onclick="analyze()">🔄 Re-analyze</button>
+                <button class="btn" onclick="analyze()">🔄 Analisis Ulang</button>
             </div>
         </div>
     </div>
@@ -583,33 +500,33 @@ input:focus, textarea:focus, select:focus {
     <div class="main" id="results">
         <div class="empty-state">
             <div class="icon">🐝</div>
-            <h2>Buzzer Probability Scorer</h2>
-            <p style="margin-top:8px;">Masukkan data akun di panel kiri, lalu klik <strong>Analyze</strong></p>
+            <h2 style="font-size:1.5em;margin-bottom:6px;">Buzzer Probability Scorer</h2>
+            <p style="margin-top:8px;font-size:0.95em;">Masukkan data akun di panel kiri, lalu klik <strong>Analisis</strong></p>
             <br>
             <div class="explain-card" style="text-align:left;">
                 <h4>📖 Tentang Tool Ini</h4>
                 <p>
-                    Tool ini menganalisis 9 sinyal perilaku untuk mendeteksi akun buzzer politik Indonesia di Twitter/X.
+                    Tool ini menganalisis <strong>9 sinyal perilaku</strong> untuk mendeteksi akun buzzer politik Indonesia di Twitter/X.
                     Setiap sinyal diberi skor berdasarkan seberapa kuat indikasi buzzer-nya.
                 </p>
                 <br>
-                <p><strong>9 Sinyal yang Dianalisis:</strong></p>
-                <p>
-                    1. 📅 <strong>Account Age vs Activity</strong> — Akun baru tapi super aktif<br>
-                    2. 👥 <strong>Follower/Following Ratio</strong> — Following >>> Followers<br>
-                    3. 📊 <strong>Tweet Volume</strong> — Frekuensi posting abnormal<br>
-                    4. 💬 <strong>Engagement Ratio</strong> — Banyak tweet, sedikit engagement<br>
-                    5. 🔄 <strong>Retweet Ratio</strong> — Kebanyakan RT tanpa original content<br>
-                    6. 🏷️ <strong>Political Hashtag Density</strong> — Spam hashtag politik<br>
-                    7. 👤 <strong>Profile Completeness</strong> — Avatar default, bio kosong, nama generik<br>
-                    8. 📝 <strong>Content Repetition</strong> — Copy-paste tweets<br>
+                <p><strong>9 Sinyal:</strong></p>
+                <p style="line-height:2;">
+                    1. 📅 <strong>Umur Akun vs Aktivitas</strong> — Akun baru tapi super aktif<br>
+                    2. 👥 <strong>Rasio Follower/Following</strong> — Following jauh lebih banyak dari followers<br>
+                    3. 📊 <strong>Volume Tweet</strong> — Frekuensi posting abnormal<br>
+                    4. 💬 <strong>Rasio Engagement</strong> — Banyak tweet, sedikit engagement<br>
+                    5. 🔄 <strong>Rasio Retweet</strong> — Kebanyakan RT tanpa konten original<br>
+                    6. 🏷️ <strong>Densitas Hashtag Politik</strong> — Spam hashtag/keyword politik<br>
+                    7. 👤 <strong>Kelengkapan Profil</strong> — Avatar default, bio kosong, nama generik<br>
+                    8. 📝 <strong>Repetisi Konten</strong> — Copy-paste tweets berulang<br>
                     9. 📋 <strong>Listed Count</strong> — Akun asli masuk list, buzzer jarang
                 </p>
                 <br>
                 <p><strong>Klasifikasi:</strong></p>
-                <p>
+                <p style="line-height:2;">
                     ✅ <strong>CLEAN</strong> (0-14%) — Kemungkinan besar akun asli<br>
-                    🟡 <strong>LOW RISK</strong> (15-29%) — Ada beberapa tanda, tapi mungkin normal<br>
+                    🟡 <strong>LOW RISK</strong> (15-29%) — Ada beberapa tanda, mungkin normal<br>
                     🔍 <strong>SUSPICIOUS</strong> (30-49%) — Perlu investigasi lebih lanjut<br>
                     ⚠️ <strong>PROBABLE BUZZER</strong> (50-74%) — Kemungkinan besar buzzer<br>
                     🚨 <strong>HIGHLY LIKELY BUZZER</strong> (75%+) — Hampir pasti buzzer
@@ -620,23 +537,30 @@ input:focus, textarea:focus, select:focus {
 </div>
 
 <script>
-// Default signal weights
+// ─── Weights ─────────────────────────────────────────
 const DEFAULT_WEIGHTS = {
-    age_activity: { name: "Account Age vs Activity", max: 15, emoji: "📅" },
-    ff_ratio: { name: "Follower/Following Ratio", max: 15, emoji: "👥" },
-    tweet_volume: { name: "Tweet Volume", max: 10, emoji: "📊" },
-    engagement: { name: "Engagement Ratio", max: 15, emoji: "💬" },
-    rt_ratio: { name: "Retweet Ratio", max: 10, emoji: "🔄" },
-    pol_hashtags: { name: "Political Hashtag Density", max: 10, emoji: "🏷️" },
-    profile: { name: "Profile Completeness", max: 10, emoji: "👤" },
-    repetition: { name: "Content Repetition", max: 10, emoji: "📝" },
-    listed: { name: "Listed Count", max: 5, emoji: "📋" }
+    age_activity: { name: "Umur vs Aktivitas", max: 15, emoji: "📅" },
+    ff_ratio:     { name: "Rasio Follower/Following", max: 15, emoji: "👥" },
+    tweet_volume: { name: "Volume Tweet", max: 10, emoji: "📊" },
+    engagement:   { name: "Rasio Engagement", max: 15, emoji: "💬" },
+    rt_ratio:     { name: "Rasio Retweet", max: 10, emoji: "🔄" },
+    pol_hashtags: { name: "Hashtag Politik", max: 10, emoji: "🏷️" },
+    profile:      { name: "Kelengkapan Profil", max: 10, emoji: "👤" },
+    repetition:   { name: "Repetisi Konten", max: 10, emoji: "📝" },
+    listed:       { name: "Listed Count", max: 5, emoji: "📋" }
 };
 
 let weights = {};
-Object.keys(DEFAULT_WEIGHTS).forEach(k => {
-    weights[k] = { ...DEFAULT_WEIGHTS[k] };
-});
+function cloneWeights() {
+    Object.keys(DEFAULT_WEIGHTS).forEach(k => { weights[k] = { ...DEFAULT_WEIGHTS[k] }; });
+}
+cloneWeights();
+
+function updateWeightTotal() {
+    const t = Object.values(weights).reduce((s, w) => s + w.max, 0);
+    const el = document.getElementById('weight-total');
+    if (el) { el.textContent = t; el.style.color = t === 100 ? 'var(--blue)' : 'var(--orange)'; }
+}
 
 function initWeightControls() {
     const el = document.getElementById('weight-controls');
@@ -647,39 +571,40 @@ function initWeightControls() {
         row.className = 'weight-row';
         row.innerHTML = `
             <label>${w.emoji} ${w.name}</label>
-            <input type="range" min="0" max="20" value="${w.max}" 
-                oninput="weights['${k}'].max=+this.value; this.nextElementSibling.textContent=this.value">
+            <input type="range" min="0" max="25" value="${w.max}"
+                oninput="weights['${k}'].max=+this.value; this.nextElementSibling.textContent=this.value; updateWeightTotal()">
             <span class="wval">${w.max}</span>
         `;
         el.appendChild(row);
     });
+    updateWeightTotal();
 }
 
-function resetWeights() {
-    Object.keys(DEFAULT_WEIGHTS).forEach(k => {
-        weights[k] = { ...DEFAULT_WEIGHTS[k] };
-    });
-    initWeightControls();
-}
+function resetWeights() { cloneWeights(); initWeightControls(); toast('Bobot direset ke default'); }
 
-function switchTab(name) {
+// ─── Tab switching ───────────────────────────────────
+function switchTab(name, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
-    event.target.classList.add('active');
+    if (btn) btn.classList.add('active');
     document.getElementById('tab-' + name).style.display = 'block';
 }
 
-function getVal(id) { return +document.getElementById(id).value || 0; }
-function getChecked(id) { return document.getElementById(id).checked; }
-
+// ─── Helpers ─────────────────────────────────────────
+function getVal(id) { return +(document.getElementById(id)?.value) || 0; }
+function getChecked(id) { return document.getElementById(id)?.checked || false; }
+function fmt(n) {
+    if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+    return n.toString();
+}
 function scoreColor(pct) {
     if (pct >= 75) return 'var(--red)';
     if (pct >= 50) return 'var(--orange)';
     if (pct >= 30) return 'var(--yellow)';
-    if (pct >= 15) return '#aaa';
+    if (pct >= 15) return '#999';
     return 'var(--green)';
 }
-
 function classify(pct) {
     if (pct >= 75) return { label: 'HIGHLY LIKELY BUZZER', emoji: '🚨', badge: 'badge-buzzer' };
     if (pct >= 50) return { label: 'PROBABLE BUZZER', emoji: '⚠️', badge: 'badge-probable' };
@@ -687,29 +612,34 @@ function classify(pct) {
     if (pct >= 15) return { label: 'LOW RISK', emoji: '🟡', badge: 'badge-low' };
     return { label: 'CLEAN', emoji: '✅', badge: 'badge-clean' };
 }
+function toast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2600);
+}
 
+// ─── Scoring Engine ──────────────────────────────────
 function analyze() {
     const followers = getVal('followers');
     const following = getVal('following');
     const tweet_count = getVal('tweet_count');
-    const age_days = getVal('age_days');
+    const age_days = getVal('age_days') || 1;
     const listed = getVal('listed');
     const avg_likes = getVal('avg_likes');
     const avg_rts = getVal('avg_rts');
     const rt_pct = getVal('rt_pct');
     const unique_pct = getVal('unique_pct');
     const pol_count = getVal('pol_hashtags');
-    const pattern = document.getElementById('posting_pattern').value;
     const default_avatar = getChecked('default_avatar');
     const generic_name = getChecked('generic_name');
     const no_bio = getChecked('no_bio');
-    const username = document.getElementById('username').value || 'unknown';
+    const username = document.getElementById('username').value || 'contoh_akun';
     const bio = document.getElementById('bio').value;
 
-    const tweets_per_day = age_days > 0 ? (tweet_count / age_days).toFixed(1) : 0;
-
+    const tweets_per_day = (tweet_count / age_days).toFixed(1);
     const signals = [];
-    let totalScore = 0, maxScore = 0;
 
     // Signal 1: Age vs Activity
     let s1 = 0;
@@ -723,50 +653,50 @@ function analyze() {
     } else {
         if (tweets_per_day > 50) s1 = Math.round(weights.age_activity.max * 0.53);
     }
-    signals.push({ ...weights.age_activity, score: s1, detail: `${age_days} hari, ${tweets_per_day} tweets/hari` });
+    signals.push({ ...weights.age_activity, score: s1, detail: `${age_days} hari, ${tweets_per_day} tweet/hari` });
 
     // Signal 2: FF Ratio
     let s2 = 0;
-    let ff_ratio = followers > 0 ? (following / followers).toFixed(2) : (following > 100 ? 999 : 0);
-    if (ff_ratio > 10) s2 = weights.ff_ratio.max;
-    else if (ff_ratio > 5) s2 = Math.round(weights.ff_ratio.max * 0.8);
-    else if (ff_ratio > 3) s2 = Math.round(weights.ff_ratio.max * 0.53);
-    else if (ff_ratio > 2) s2 = Math.round(weights.ff_ratio.max * 0.27);
-    signals.push({ ...weights.ff_ratio, score: s2, detail: `Following:${following} Followers:${followers} Ratio:${ff_ratio}` });
+    const ff = followers > 0 ? (following / followers) : (following > 100 ? 999 : 0);
+    if (ff > 10) s2 = weights.ff_ratio.max;
+    else if (ff > 5) s2 = Math.round(weights.ff_ratio.max * 0.8);
+    else if (ff > 3) s2 = Math.round(weights.ff_ratio.max * 0.53);
+    else if (ff > 2) s2 = Math.round(weights.ff_ratio.max * 0.27);
+    signals.push({ ...weights.ff_ratio, score: s2, detail: `Following:${fmt(following)} Followers:${fmt(followers)} Rasio:${ff.toFixed(1)}` });
 
     // Signal 3: Tweet Volume
     let s3 = 0;
     if (tweets_per_day > 50) s3 = weights.tweet_volume.max;
     else if (tweets_per_day > 30) s3 = Math.round(weights.tweet_volume.max * 0.7);
     else if (tweets_per_day > 20) s3 = Math.round(weights.tweet_volume.max * 0.4);
-    signals.push({ ...weights.tweet_volume, score: s3, detail: `${tweets_per_day} tweets/hari` });
+    signals.push({ ...weights.tweet_volume, score: s3, detail: `${tweets_per_day} tweet/hari` });
 
     // Signal 4: Engagement
     let s4 = 0;
     if (followers > 1000) {
-        const eng_rate = (avg_likes + avg_rts) / followers * 100;
-        if (eng_rate < 0.01) s4 = weights.engagement.max;
-        else if (eng_rate < 0.05) s4 = Math.round(weights.engagement.max * 0.67);
-        else if (eng_rate < 0.1) s4 = Math.round(weights.engagement.max * 0.33);
+        const eng = (avg_likes + avg_rts) / followers * 100;
+        if (eng < 0.01) s4 = weights.engagement.max;
+        else if (eng < 0.05) s4 = Math.round(weights.engagement.max * 0.67);
+        else if (eng < 0.1) s4 = Math.round(weights.engagement.max * 0.33);
     } else if (followers < 100 && tweet_count > 5000) {
         s4 = Math.round(weights.engagement.max * 0.8);
     }
-    signals.push({ ...weights.engagement, score: s4, detail: `Avg likes:${avg_likes} RTs:${avg_rts}` });
+    signals.push({ ...weights.engagement, score: s4, detail: `Avg likes:${avg_likes} RTs:${avg_rts} Followers:${fmt(followers)}` });
 
     // Signal 5: RT Ratio
     let s5 = 0;
     if (rt_pct > 90) s5 = weights.rt_ratio.max;
     else if (rt_pct > 70) s5 = Math.round(weights.rt_ratio.max * 0.7);
     else if (rt_pct > 50) s5 = Math.round(weights.rt_ratio.max * 0.4);
-    signals.push({ ...weights.rt_ratio, score: s5, detail: `${rt_pct}% tweets are RTs` });
+    signals.push({ ...weights.rt_ratio, score: s5, detail: `${rt_pct}% tweet adalah RT` });
 
     // Signal 6: Political Hashtags
     let s6 = 0;
-    const pol_density = pol_count / 20;
-    if (pol_density > 3) s6 = weights.pol_hashtags.max;
-    else if (pol_density > 1.5) s6 = Math.round(weights.pol_hashtags.max * 0.7);
-    else if (pol_density > 0.5) s6 = Math.round(weights.pol_hashtags.max * 0.3);
-    signals.push({ ...weights.pol_hashtags, score: s6, detail: `${pol_count} political hashtags in 20 tweets` });
+    const pol_d = pol_count / 20;
+    if (pol_d > 3) s6 = weights.pol_hashtags.max;
+    else if (pol_d > 1.5) s6 = Math.round(weights.pol_hashtags.max * 0.7);
+    else if (pol_d > 0.5) s6 = Math.round(weights.pol_hashtags.max * 0.3);
+    signals.push({ ...weights.pol_hashtags, score: s6, detail: `${pol_count} keyword politik dalam 20 tweet` });
 
     // Signal 7: Profile
     let s7 = 0;
@@ -774,70 +704,105 @@ function analyze() {
     if (no_bio) s7 += Math.round(weights.profile.max * 0.3);
     if (generic_name) s7 += Math.round(weights.profile.max * 0.3);
     s7 = Math.min(s7, weights.profile.max);
-    signals.push({ ...weights.profile, score: s7, detail: `Avatar:${default_avatar} NoBio:${no_bio} Generic:${generic_name}` });
+    const flags = [];
+    if (default_avatar) flags.push('avatar default');
+    if (no_bio) flags.push('tanpa bio');
+    if (generic_name) flags.push('username generik');
+    signals.push({ ...weights.profile, score: s7, detail: flags.length ? flags.join(', ') : 'profil lengkap' });
 
     // Signal 8: Repetition
     let s8 = 0;
-    const dup_pct = 100 - unique_pct;
-    if (dup_pct > 50) s8 = weights.repetition.max;
-    else if (dup_pct > 30) s8 = Math.round(weights.repetition.max * 0.6);
-    else if (dup_pct > 15) s8 = Math.round(weights.repetition.max * 0.3);
-    signals.push({ ...weights.repetition, score: s8, detail: `${unique_pct}% unique content` });
+    const dup = 100 - unique_pct;
+    if (dup > 50) s8 = weights.repetition.max;
+    else if (dup > 30) s8 = Math.round(weights.repetition.max * 0.6);
+    else if (dup > 15) s8 = Math.round(weights.repetition.max * 0.3);
+    signals.push({ ...weights.repetition, score: s8, detail: `${dup}% konten duplikat (${unique_pct}% unik)` });
 
     // Signal 9: Listed
     let s9 = 0;
     if (tweet_count > 1000 && listed < 5) s9 = weights.listed.max;
     else if (tweet_count > 500 && listed < 2) s9 = Math.round(weights.listed.max * 0.6);
-    signals.push({ ...weights.listed, score: s9, detail: `In ${listed} lists with ${tweet_count} tweets` });
+    signals.push({ ...weights.listed, score: s9, detail: `Masuk ${listed} list dengan ${fmt(tweet_count)} tweet` });
 
+    let totalScore = 0, maxScore = 0;
     signals.forEach(s => { totalScore += s.score; maxScore += s.max; });
     const probability = maxScore > 0 ? Math.round(totalScore * 100 / maxScore) : 0;
     const cls = classify(probability);
 
     renderResult({ username, bio, followers, following, tweet_count, listed, age_days, tweets_per_day, signals, totalScore, maxScore, probability, cls });
+    toast(`Score: ${probability}% — ${cls.label}`);
 }
 
+// ─── Render Single Result ────────────────────────────
 function renderResult(d) {
     const el = document.getElementById('results');
     const color = scoreColor(d.probability);
+    const gaugeLen = d.probability * 2.83;
 
     el.innerHTML = `
         <div class="account-card">
-            <div class="username">@${d.username.replace('@','')}</div>
-            <div class="bio">${d.bio || '(no bio)'}</div>
+            <div class="username">@${(d.username||'').replace('@','')}</div>
+            ${d.bio ? `<div class="bio">"${d.bio}"</div>` : ''}
             <div class="metrics-grid">
-                <div class="metric"><div class="num">${fmt(d.followers)}</div><div class="lbl">Followers</div></div>
-                <div class="metric"><div class="num">${fmt(d.following)}</div><div class="lbl">Following</div></div>
+                <div class="metric"><div class="num" style="color:var(--cyan,var(--blue))">${fmt(d.followers)}</div><div class="lbl">Followers</div></div>
+                <div class="metric"><div class="num" style="color:var(--purple)">${fmt(d.following)}</div><div class="lbl">Following</div></div>
                 <div class="metric"><div class="num">${fmt(d.tweet_count)}</div><div class="lbl">Tweets</div></div>
-                <div class="metric"><div class="num">${d.tweets_per_day}</div><div class="lbl">Tweets/Day</div></div>
+                <div class="metric"><div class="num" style="color:var(--orange)">${d.tweets_per_day}</div><div class="lbl">Tweet/Hari</div></div>
             </div>
         </div>
 
         <div class="gauge-container">
-            <div style="position:relative;width:220px;height:130px;">
-                <svg viewBox="0 0 220 130" width="220" height="130">
-                    <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#333" stroke-width="18" stroke-linecap="round"/>
-                    <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="${color}" stroke-width="18" stroke-linecap="round"
-                        stroke-dasharray="${d.probability * 2.83} 283" style="transition: stroke-dasharray 0.8s ease"/>
+            <div style="position:relative;width:240px;height:140px;">
+                <svg viewBox="0 0 240 140" width="240" height="140">
+                    <defs>
+                        <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:var(--green)"/>
+                            <stop offset="40%" style="stop-color:var(--yellow)"/>
+                            <stop offset="70%" style="stop-color:var(--orange)"/>
+                            <stop offset="100%" style="stop-color:var(--red)"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#1a1a2e" stroke-width="20" stroke-linecap="round"/>
+                    <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="url(#gaugeGrad)" stroke-width="20" stroke-linecap="round"
+                        stroke-dasharray="${gaugeLen} 314" style="transition: stroke-dasharray 0.8s cubic-bezier(0.4,0,0.2,1)"/>
+                    <!-- Tick marks -->
+                    ${[0,25,50,75,100].map(v => {
+                        const angle = -180 + (v/100)*180;
+                        const rad = angle * Math.PI / 180;
+                        const x1 = 120 + 82 * Math.cos(rad);
+                        const y1 = 120 + 82 * Math.sin(rad);
+                        const x2 = 120 + 92 * Math.cos(rad);
+                        const y2 = 120 + 92 * Math.sin(rad);
+                        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#444" stroke-width="2"/>`;
+                    }).join('')}
                 </svg>
                 <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center;">
-                    <div style="font-size:2.5em;font-weight:800;color:${color}">${d.probability}%</div>
+                    <div style="font-size:2.8em;font-weight:900;color:${color};text-shadow:0 2px 12px ${color}40;">${d.probability}%</div>
                 </div>
             </div>
-            <div class="classification" style="color:${color};border:1px solid ${color};margin-top:8px;">
+            <div class="classification-badge" style="color:${color};border:2px solid ${color};background:${color}15;">
                 ${d.cls.emoji} ${d.cls.label}
             </div>
-            <div style="font-size:0.8em;color:var(--text-dim);margin-top:4px;">
-                Raw: ${d.totalScore}/${d.maxScore}
+            <div style="font-size:0.78em;color:var(--text-muted);margin-top:6px;">
+                Skor mentah: ${d.totalScore}/${d.maxScore}
             </div>
         </div>
 
-        <h3 style="color:var(--accent);margin:24px 0 16px;font-size:0.85em;text-transform:uppercase;letter-spacing:1px;">
-            Signal Breakdown
-        </h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:28px 0 16px;">
+            <h3 style="color:var(--accent);font-size:0.8em;text-transform:uppercase;letter-spacing:1.5px;">
+                Breakdown Sinyal
+            </h3>
+            <div class="btn-row" style="margin:0;width:auto;">
+                <button class="btn secondary" style="width:auto;padding:6px 14px;font-size:0.75em;" onclick="exportJSON()">📋 Copy JSON</button>
+            </div>
+        </div>
+
         ${d.signals.map(s => {
             const pct = s.max > 0 ? (s.score / s.max * 100) : 0;
-            const barColor = pct >= 70 ? 'var(--red)' : pct >= 40 ? 'var(--orange)' : pct > 0 ? 'var(--yellow)' : 'var(--green)';
+            const barColor = pct >= 70 ? 'linear-gradient(90deg,var(--orange),var(--red))' :
+                             pct >= 40 ? 'linear-gradient(90deg,var(--yellow),var(--orange))' :
+                             pct > 0   ? 'linear-gradient(90deg,var(--green),var(--yellow))' :
+                                         'var(--green)';
             return `
                 <div class="signal">
                     <div class="signal-header">
@@ -852,118 +817,151 @@ function renderResult(d) {
             `;
         }).join('')}
 
-        <div class="explain-card" style="margin-top:24px;">
+        <div class="explain-card" style="margin-top:28px;">
             <h4>💡 Interpretasi</h4>
             <p>${getInterpretation(d)}</p>
         </div>
+
+        <div class="explain-card" style="margin-top:12px;border-left-color:var(--text-muted);">
+            <h4>⚠️ Disclaimer</h4>
+            <p>Tool ini untuk edukasi dan riset. Skor tinggi tidak otomatis berarti akun tersebut buzzer.
+            Akun media, aktivis, dan news bot bisa mendapat skor tinggi karena perilaku yang mirip buzzer
+            (volume tinggi, fokus politik). Selalu lakukan verifikasi manual.</p>
+        </div>
     `;
+
+    // Store last result for export
+    window._lastResult = d;
 }
 
 function getInterpretation(d) {
     const top = d.signals.filter(s => s.score > 0).sort((a,b) => (b.score/b.max) - (a.score/a.max)).slice(0, 3);
+    const names = top.map(s => `<strong>${s.name}</strong>`).join(', ');
     if (d.probability >= 75) {
-        return `Akun ini menunjukkan ciri-ciri buzzer yang sangat kuat. Sinyal tertinggi: ${top.map(s => s.name).join(', ')}. Hampir pasti ini akun yang dioperasikan secara terkoordinasi untuk menyebarkan narasi tertentu.`;
+        return `Akun ini menunjukkan ciri-ciri buzzer yang <strong>sangat kuat</strong>. Sinyal tertinggi: ${names}. Hampir pasti ini akun yang dioperasikan secara terkoordinasi untuk amplifikasi narasi tertentu.`;
     } else if (d.probability >= 50) {
-        return `Akun ini memiliki beberapa ciri khas buzzer. Perhatikan: ${top.map(s => s.name).join(', ')}. Kemungkinan besar akun ini digunakan untuk tujuan amplifikasi pesan politik.`;
+        return `Akun ini memiliki beberapa <strong>ciri khas buzzer</strong>. Perhatikan: ${names}. Kemungkinan besar digunakan untuk amplifikasi pesan politik.`;
     } else if (d.probability >= 30) {
-        return `Ada beberapa indikasi mencurigakan (${top.map(s => s.name).join(', ')}), tapi tidak cukup kuat untuk disimpulkan sebagai buzzer. Perlu analisis lebih lanjut.`;
+        return `Ada beberapa <strong>indikasi mencurigakan</strong> (${names}), tapi tidak cukup kuat untuk disimpulkan sebagai buzzer. Perlu analisis lebih lanjut.`;
     } else if (d.probability >= 15) {
-        return `Sedikit tanda yang perlu diperhatikan (${top.map(s => s.name).join(', ')}), tapi secara umum perilaku akun masih dalam batas normal.`;
+        return `Sedikit tanda yang perlu diperhatikan (${names}), tapi secara umum perilaku akun masih dalam <strong>batas normal</strong>.`;
     }
-    return `Akun ini menunjukkan perilaku yang konsisten dengan akun organik. Tidak ada indikasi kuat aktivitas buzzer.`;
+    return `Akun ini menunjukkan perilaku yang <strong>konsisten dengan akun organik</strong>. Tidak ada indikasi kuat aktivitas buzzer.`;
 }
 
+function exportJSON() {
+    const d = window._lastResult;
+    if (!d) return;
+    const out = {
+        username: (d.username||'').replace('@',''),
+        buzzer_score: { probability: d.probability, classification: d.cls.label, total_score: d.totalScore, max_score: d.maxScore },
+        metrics: { followers: d.followers, following: d.following, tweets: d.tweet_count, tweets_per_day: +d.tweets_per_day },
+        signals: d.signals.map(s => ({ name: s.name, score: s.score, max: s.max }))
+    };
+    navigator.clipboard.writeText(JSON.stringify(out, null, 2)).then(() => toast('JSON disalin ke clipboard!'));
+}
+
+// ─── Batch ───────────────────────────────────────────
 function loadBatch() {
     try {
-        const data = JSON.parse(document.getElementById('batch_json').value);
+        const raw = document.getElementById('batch_json').value.trim();
+        const data = JSON.parse(raw);
         renderBatchTable(Array.isArray(data) ? data : [data]);
     } catch(e) {
-        alert('Invalid JSON: ' + e.message);
+        toast('JSON tidak valid: ' + e.message);
     }
 }
 
 function loadSampleBatch() {
     const sample = [
-        { username: "patriot_nkri_2024", buzzer_score: { probability: 82, classification: "HIGHLY LIKELY BUZZER" }, metrics: { followers: 45, following: 4200, tweets: 28000, tweets_per_day: 155 } },
+        { username: "patriot_nkri_2024", buzzer_score: { probability: 92, classification: "HIGHLY LIKELY BUZZER" }, metrics: { followers: 45, following: 4200, tweets: 28000, tweets_per_day: 233 } },
         { username: "ibu_rumah_tangga", buzzer_score: { probability: 12, classification: "CLEAN" }, metrics: { followers: 340, following: 280, tweets: 1200, tweets_per_day: 0.8 } },
         { username: "berita_terkini_id", buzzer_score: { probability: 58, classification: "PROBABLE BUZZER" }, metrics: { followers: 5200, following: 890, tweets: 45000, tweets_per_day: 35 } },
         { username: "user83749120", buzzer_score: { probability: 71, classification: "PROBABLE BUZZER" }, metrics: { followers: 12, following: 3100, tweets: 9800, tweets_per_day: 54 } },
-        { username: "tech_enthusiast_jkt", buzzer_score: { probability: 8, classification: "CLEAN" }, metrics: { followers: 2100, following: 450, tweets: 3400, tweets_per_day: 2.1 } },
+        { username: "tech_enthusiast_jkt", buzzer_score: { probability: 5, classification: "CLEAN" }, metrics: { followers: 2100, following: 450, tweets: 3400, tweets_per_day: 2.1 } },
         { username: "relawan_merah_putih", buzzer_score: { probability: 89, classification: "HIGHLY LIKELY BUZZER" }, metrics: { followers: 28, following: 5100, tweets: 42000, tweets_per_day: 233 } },
         { username: "kabar_daerah_24h", buzzer_score: { probability: 45, classification: "SUSPICIOUS" }, metrics: { followers: 890, following: 2300, tweets: 18000, tweets_per_day: 25 } },
     ];
     renderBatchTable(sample);
+    toast('Data sampel dimuat — 7 akun');
 }
 
 function renderBatchTable(data) {
-    const sorted = data.sort((a,b) => (b.buzzer_score?.probability || 0) - (a.buzzer_score?.probability || 0));
+    const sorted = [...data].sort((a,b) => (b.buzzer_score?.probability||0) - (a.buzzer_score?.probability||0));
     const el = document.getElementById('results');
-    el.innerHTML = `
-        <h2 style="margin-bottom:4px;">📊 Batch Analysis Results</h2>
-        <p style="color:var(--text-dim);font-size:0.85em;margin-bottom:16px;">${data.length} akun dianalisis</p>
 
-        <div class="metrics-grid" style="margin-bottom:20px;">
+    const stats = {
+        buzzer: data.filter(d => (d.buzzer_score?.probability||0) >= 50).length,
+        suspicious: data.filter(d => { const p = d.buzzer_score?.probability||0; return p >= 30 && p < 50; }).length,
+        clean: data.filter(d => (d.buzzer_score?.probability||0) < 30).length,
+        avg: Math.round(data.reduce((s,d) => s + (d.buzzer_score?.probability||0), 0) / data.length)
+    };
+
+    el.innerHTML = `
+        <h2 style="margin-bottom:6px;">📊 Hasil Analisis Batch</h2>
+        <p style="color:var(--text-dim);font-size:0.85em;margin-bottom:18px;">${data.length} akun dianalisis</p>
+
+        <div class="metrics-grid" style="margin-bottom:24px;">
             <div class="metric">
-                <div class="num" style="color:var(--red)">${data.filter(d => (d.buzzer_score?.probability || 0) >= 50).length}</div>
+                <div class="num" style="color:var(--red)">${stats.buzzer}</div>
                 <div class="lbl">Probable Buzzer</div>
             </div>
             <div class="metric">
-                <div class="num" style="color:var(--yellow)">${data.filter(d => { const p = d.buzzer_score?.probability || 0; return p >= 30 && p < 50; }).length}</div>
+                <div class="num" style="color:var(--yellow)">${stats.suspicious}</div>
                 <div class="lbl">Suspicious</div>
             </div>
             <div class="metric">
-                <div class="num" style="color:var(--green)">${data.filter(d => (d.buzzer_score?.probability || 0) < 30).length}</div>
-                <div class="lbl">Clean/Low</div>
+                <div class="num" style="color:var(--green)">${stats.clean}</div>
+                <div class="lbl">Clean / Low</div>
             </div>
             <div class="metric">
-                <div class="num">${Math.round(data.reduce((s,d) => s + (d.buzzer_score?.probability || 0), 0) / data.length)}%</div>
-                <div class="lbl">Avg Score</div>
+                <div class="num">${stats.avg}%</div>
+                <div class="lbl">Rata-rata Skor</div>
             </div>
         </div>
 
         <table class="batch-table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Username</th>
-                    <th>Score</th>
-                    <th>Classification</th>
+                    <th>Skor</th>
+                    <th>Klasifikasi</th>
                     <th>Followers</th>
-                    <th>Tweets/Day</th>
+                    <th>Tweet/Hari</th>
                 </tr>
             </thead>
             <tbody>
-                ${sorted.map(d => {
+                ${sorted.map((d, i) => {
                     const p = d.buzzer_score?.probability || 0;
                     const cls = classify(p);
                     return `<tr>
-                        <td style="font-weight:600;color:var(--blue)">@${d.username}</td>
-                        <td style="font-weight:700;color:${scoreColor(p)}">${p}%</td>
+                        <td style="color:var(--text-muted)">${i+1}</td>
+                        <td style="font-weight:700;color:var(--blue)">@${d.username}</td>
+                        <td style="font-weight:800;color:${scoreColor(p)};font-size:1.05em;">${p}%</td>
                         <td><span class="badge ${cls.badge}">${cls.emoji} ${cls.label}</span></td>
                         <td>${fmt(d.metrics?.followers || 0)}</td>
-                        <td>${d.metrics?.tweets_per_day || '—'}</td>
+                        <td>${d.metrics?.tweets_per_day ?? '—'}</td>
                     </tr>`;
                 }).join('')}
             </tbody>
         </table>
+
+        <div class="explain-card" style="margin-top:24px;border-left-color:var(--text-muted);">
+            <h4>💡 Tips</h4>
+            <p>Gunakan output JSON dari CLI (<code>python buzzer_score.py --batch accounts.txt --json</code>) untuk analisis batch yang lebih detail. Paste hasilnya di tab Batch untuk visualisasi.</p>
+        </div>
     `;
 }
 
-function fmt(n) {
-    if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
-    if (n >= 1000) return (n/1000).toFixed(1) + 'K';
-    return n.toString();
-}
-
-// Auto-analyze on input change
-document.querySelectorAll('input, select, textarea').forEach(el => {
+// ─── Auto-analyze on change ──────────────────────────
+document.querySelectorAll('#tab-manual input, #tab-manual select, #tab-manual textarea').forEach(el => {
     el.addEventListener('change', () => {
-        if (document.getElementById('tab-manual').style.display !== 'none') {
-            analyze();
-        }
+        if (document.getElementById('tab-manual').style.display !== 'none') analyze();
     });
 });
 
-// Init
+// ─── Init ────────────────────────────────────────────
 initWeightControls();
 </script>
 </body>
