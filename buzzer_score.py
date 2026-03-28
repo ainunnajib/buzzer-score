@@ -771,8 +771,13 @@ def run_server(bearer_token: str, port: int = 8090):
   {C_DIM}Press Ctrl+C to stop{C_RESET}
 """)
 
-    # Auto-open browser
-    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+    # Auto-open browser (best effort)
+    def open_browser():
+        try:
+            webbrowser.open(url)
+        except Exception:
+            pass
+    threading.Timer(0.5, open_browser).start()
 
     try:
         server.serve_forever()
