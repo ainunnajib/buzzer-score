@@ -402,9 +402,41 @@ input:focus, textarea:focus, select:focus {
 <div class="container">
     <div class="sidebar">
         <div class="tabs">
+            <button class="tab" onclick="switchTab('live', this)" id="btn-live">🔴 Live</button>
             <button class="tab active" onclick="switchTab('manual', this)">📝 Manual</button>
             <button class="tab" onclick="switchTab('batch', this)">📊 Batch</button>
             <button class="tab" onclick="switchTab('weights', this)">⚙️ Bobot</button>
+        </div>
+
+        <!-- Live API Tab -->
+        <div id="tab-live" style="display:none">
+            <div class="section">
+                <h3>🔴 Live Analysis</h3>
+                <div id="server-status" style="padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:0.85em;background:rgba(255,23,68,0.1);color:var(--red);">
+                    ⏳ Checking server...
+                </div>
+                <p style="font-size:0.8em;color:var(--text-dim);margin-bottom:12px;">
+                    Fetch real Twitter data via local API server.<br>
+                    Start with: <code>python buzzer_score.py --server</code>
+                </p>
+
+                <label>Username(s)</label>
+                <textarea id="live_usernames" rows="4" placeholder="@username1&#10;@username2&#10;@username3&#10;(satu per baris)"></textarea>
+
+                <button class="btn" onclick="liveAnalyze()" id="live-btn">
+                    🔍 Scan Akun
+                </button>
+                <div id="live-progress" style="display:none;margin-top:12px;font-size:0.85em;color:var(--text-dim);">
+                    <span class="loading"></span> Fetching data from Twitter API...
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>📋 History</h3>
+                <div id="live-history" style="font-size:0.8em;color:var(--text-dim);">
+                    Belum ada scan.
+                </div>
+            </div>
         </div>
 
         <!-- Manual Input Tab -->
@@ -585,7 +617,7 @@ function resetWeights() { cloneWeights(); initWeightControls(); toast('Bobot dir
 // ─── Tab switching ───────────────────────────────────
 function switchTab(name, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.sidebar > [id^="tab-"]').forEach(t => t.style.display = 'none');
     if (btn) btn.classList.add('active');
     document.getElementById('tab-' + name).style.display = 'block';
 }
@@ -961,8 +993,238 @@ document.querySelectorAll('#tab-manual input, #tab-manual select, #tab-manual te
     });
 });
 
+// ─── Live API Mode ───────────────────────────────────
+
+const API_BASE = window.location.origin;
+let serverOnline = false;
+let liveHistory = [];
+
+async function checkServer() {
+    const el = document.getElementById('server-status');
+    const btn = document.getElementById('live-btn');
+    try {
+        const resp = await fetch(API_BASE + '/api/health', { signal: AbortSignal.timeout(3000) });
+        if (resp.ok) {
+            const data = await resp.json();
+            el.style.background = 'rgba(0,200,83,0.1)';
+            el.style.color = 'var(--green)';
+            el.textContent = `✅ Server online (v${data.version})`;
+            serverOnline = true;
+            btn.disabled = false;
+            // Auto-switch to live tab if server is running
+            document.getElementById('btn-live').style.background = 'rgba(0,200,83,0.2)';
+            document.getElementById('btn-live').textContent = '🟢 Live';
+            return;
+        }
+    } catch(e) {}
+    el.style.background = 'rgba(255,23,68,0.1)';
+    el.style.color = 'var(--red)';
+    el.innerHTML = '❌ Server offline — jalankan: <code>python buzzer_score.py --server</code>';
+    serverOnline = false;
+    btn.disabled = true;
+}
+
+async function liveAnalyze() {
+    if (!serverOnline) { toast('Server tidak aktif!', 'var(--red)'); return; }
+
+    const input = document.getElementById('live_usernames').value.trim();
+    if (!input) { toast('Masukkan username!', 'var(--red)'); return; }
+
+    const usernames = input.split('\n').map(u => u.trim().replace(/^@/, '')).filter(Boolean);
+    if (usernames.length === 0) return;
+
+    const progress = document.getElementById('live-progress');
+    const btn = document.getElementById('live-btn');
+    progress.style.display = 'block';
+    btn.disabled = true;
+    btn.textContent = '⏳ Scanning...';
+
+    const results = [];
+
+    for (const username of usernames) {
+        try {
+            progress.innerHTML = `<span class="loading"></span> Fetching @${username}... (${results.length + 1}/${usernames.length})`;
+            const resp = await fetch(`${API_BASE}/api/score?username=${encodeURIComponent(username)}`);
+            const data = await resp.json();
+            results.push(data);
+        } catch(e) {
+            results.push({ error: `Failed to fetch @${username}: ${e.message}`, username });
+        }
+    }
+
+    progress.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '🔍 Scan Akun';
+
+    // Store in history
+    liveHistory.unshift({ time: new Date().toLocaleTimeString(), usernames, results });
+    updateLiveHistory();
+
+    // Display results
+    if (results.length === 1 && !results[0].error) {
+        renderLiveResult(results[0]);
+    } else {
+        renderLiveBatch(results);
+    }
+}
+
+function renderLiveResult(d) {
+    // Convert API response to the format our existing renderer expects
+    if (d.error) {
+        document.getElementById('results').innerHTML = `
+            <div class="empty-state">
+                <div class="icon">❌</div>
+                <h2>Error</h2>
+                <p>${d.error}</p>
+            </div>`;
+        return;
+    }
+
+    const probability = d.probability || d.buzzer_score?.probability || 0;
+    const classification = classify(probability);
+    const signals = d.signals || d.buzzer_score?.signals || [];
+
+    const el = document.getElementById('results');
+    const color = scoreColor(probability);
+
+    el.innerHTML = `
+        <div class="account-card">
+            <div class="username">@${d.username}</div>
+            <div class="name">${d.name || ''}</div>
+            <div class="bio">${d.bio || '(no bio)'}</div>
+            <div class="metrics-grid">
+                <div class="metric"><div class="num">${fmt(d.followers || d.metrics?.followers || 0)}</div><div class="lbl">Followers</div></div>
+                <div class="metric"><div class="num">${fmt(d.following || d.metrics?.following || 0)}</div><div class="lbl">Following</div></div>
+                <div class="metric"><div class="num">${fmt(d.tweet_count || d.metrics?.tweets || 0)}</div><div class="lbl">Tweets</div></div>
+                <div class="metric"><div class="num">${d.tweets_per_day || d.metrics?.tweets_per_day || '—'}</div><div class="lbl">Tweets/Day</div></div>
+            </div>
+        </div>
+
+        <div class="gauge-container">
+            <div style="position:relative;width:220px;height:130px;">
+                <svg viewBox="0 0 220 130" width="220" height="130">
+                    <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#333" stroke-width="18" stroke-linecap="round"/>
+                    <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="${color}" stroke-width="18" stroke-linecap="round"
+                        stroke-dasharray="${probability * 2.83} 283" style="transition: stroke-dasharray 0.8s ease"/>
+                </svg>
+                <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center;">
+                    <div style="font-size:2.5em;font-weight:800;color:${color}">${probability}%</div>
+                </div>
+            </div>
+            <div class="classification" style="color:${color};border:1px solid ${color};margin-top:8px;">
+                ${classification.emoji} ${classification.label}
+            </div>
+        </div>
+
+        <h3 style="color:var(--accent);margin:24px 0 16px;font-size:0.85em;text-transform:uppercase;letter-spacing:1px;">
+            Signal Breakdown
+        </h3>
+        ${signals.map(s => {
+            const pct = s.max > 0 ? (s.score / s.max * 100) : 0;
+            const barColor = pct >= 70 ? 'var(--red)' : pct >= 40 ? 'var(--orange)' : pct > 0 ? 'var(--yellow)' : 'var(--green)';
+            return `
+                <div class="signal">
+                    <div class="signal-header">
+                        <span class="signal-name">${s.emoji || '📌'} ${s.name || s.key}</span>
+                        <span class="signal-score">${s.score}/${s.max}</span>
+                    </div>
+                    <div class="signal-bar">
+                        <div class="signal-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+                    </div>
+                    <div class="signal-detail">${s.detail || ''}</div>
+                </div>
+            `;
+        }).join('')}
+
+        <div class="explain-card" style="margin-top:24px;">
+            <h4>📡 Data Source</h4>
+            <p>Data diambil langsung dari Twitter API v2. Sample size: ${d.sample_size || '?'} tweets terbaru.</p>
+        </div>
+    `;
+}
+
+function renderLiveBatch(results) {
+    const valid = results.filter(r => !r.error && r.probability !== undefined);
+    const errors = results.filter(r => r.error);
+
+    const sorted = valid.sort((a,b) => (b.probability || 0) - (a.probability || 0));
+    const el = document.getElementById('results');
+
+    el.innerHTML = `
+        <h2 style="margin-bottom:4px;">🔴 Live Batch Results</h2>
+        <p style="color:var(--text-dim);font-size:0.85em;margin-bottom:16px;">${results.length} akun dianalisis (${errors.length} error)</p>
+
+        <div class="metrics-grid" style="margin-bottom:20px;">
+            <div class="metric">
+                <div class="num" style="color:var(--red)">${valid.filter(d => (d.probability || 0) >= 50).length}</div>
+                <div class="lbl">Buzzer</div>
+            </div>
+            <div class="metric">
+                <div class="num" style="color:var(--yellow)">${valid.filter(d => { const p = d.probability || 0; return p >= 30 && p < 50; }).length}</div>
+                <div class="lbl">Suspicious</div>
+            </div>
+            <div class="metric">
+                <div class="num" style="color:var(--green)">${valid.filter(d => (d.probability || 0) < 30).length}</div>
+                <div class="lbl">Clean</div>
+            </div>
+            <div class="metric">
+                <div class="num">${valid.length > 0 ? Math.round(valid.reduce((s,d) => s + (d.probability || 0), 0) / valid.length) : 0}%</div>
+                <div class="lbl">Avg Score</div>
+            </div>
+        </div>
+
+        ${errors.length > 0 ? `<div class="explain-card" style="border-left-color:var(--red);margin-bottom:16px;">
+            <h4>❌ Errors</h4>
+            <p>${errors.map(e => `@${e.username || '?'}: ${e.error}`).join('<br>')}</p>
+        </div>` : ''}
+
+        <table class="batch-table">
+            <thead><tr>
+                <th>Username</th><th>Score</th><th>Classification</th>
+                <th>Followers</th><th>Tweets/Day</th><th>Detail</th>
+            </tr></thead>
+            <tbody>
+                ${sorted.map(d => {
+                    const p = d.probability || 0;
+                    const cls = classify(p);
+                    return `<tr style="cursor:pointer" onclick='renderLiveResult(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
+                        <td style="font-weight:600;color:var(--blue)">@${d.username}</td>
+                        <td style="font-weight:700;color:${scoreColor(p)}">${p}%</td>
+                        <td><span class="badge ${cls.badge}">${cls.emoji} ${cls.label}</span></td>
+                        <td>${fmt(d.followers || 0)}</td>
+                        <td>${d.tweets_per_day || '—'}</td>
+                        <td style="color:var(--text-dim);font-size:0.8em;">Click for detail</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function updateLiveHistory() {
+    const el = document.getElementById('live-history');
+    if (liveHistory.length === 0) {
+        el.textContent = 'Belum ada scan.';
+        return;
+    }
+    el.innerHTML = liveHistory.slice(0, 10).map(h => {
+        const count = h.results.filter(r => !r.error).length;
+        const buzzers = h.results.filter(r => (r.probability || 0) >= 50).length;
+        return `<div style="margin-bottom:6px;">
+            <span style="color:var(--text-dim)">${h.time}</span>
+            ${h.usernames.map(u => `<span style="color:var(--blue)">@${u}</span>`).join(' ')}
+            — ${count} scanned${buzzers > 0 ? `, <span style="color:var(--red)">${buzzers} buzzer</span>` : ''}
+        </div>`;
+    }).join('');
+}
+
 // ─── Init ────────────────────────────────────────────
 initWeightControls();
+
+// Check server on load
+checkServer();
+// Re-check periodically
+setInterval(checkServer, 15000);
 </script>
 </body>
 </html>

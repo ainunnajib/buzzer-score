@@ -48,23 +48,42 @@
 
 Buka [`index.html`](index.html) di browser atau kunjungi **[live demo](https://ainunnajib.github.io/buzzer-score/)**.
 
-### CLI Tool
+### 🔴 Server Mode (Recommended!)
+
+Satu command — buka browser dengan playground yang bisa scan akun Twitter secara langsung:
 
 ```bash
-# Clone repo
+# Clone & setup
 git clone https://github.com/ainunnajib/buzzer-score.git
 cd buzzer-score
-
-# Install dependency
 pip install -r requirements.txt
 
 # Set Twitter API Bearer Token
 export TWITTER_BEARER_TOKEN="your-bearer-token-here"
+
+# Start server — opens browser automatically!
+python buzzer_score.py --server
 ```
 
-## 💻 Usage (CLI)
+Playground akan terbuka di `http://localhost:8090` dengan tab **🟢 Live** — masukkan username, klik Scan, data langsung diambil dari Twitter API.
 
-### Analisis satu akun
+### CLI Tool
+
+```bash
+# Set Twitter API Bearer Token
+export TWITTER_BEARER_TOKEN="your-bearer-token-here"
+```
+
+## 💻 Usage
+
+### Server mode (web + API)
+
+```bash
+python buzzer_score.py --server              # default port 8090
+python buzzer_score.py --server --port 3000  # custom port
+```
+
+### Analisis satu akun (CLI)
 
 ```bash
 python buzzer_score.py @username

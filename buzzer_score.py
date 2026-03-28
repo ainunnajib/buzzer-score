@@ -697,6 +697,90 @@ def to_csv_output(results: list) -> str:
     return buf.getvalue()
 
 
+# ─── Web Server Mode ─────────────────────────────────────────────────────────
+
+def run_server(bearer_token: str, port: int = 8090):
+    """Start a local HTTP server with API endpoints + playground."""
+    import http.server
+    import urllib.parse
+    import threading
+    import webbrowser
+
+    client = create_client(bearer_token)
+
+    # Find index.html relative to this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    index_path = os.path.join(script_dir, "index.html")
+
+    class BuzzerHandler(http.server.SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=script_dir, **kwargs)
+
+        def do_GET(self):
+            parsed = urllib.parse.urlparse(self.path)
+
+            # API: /api/score?username=xxx or /api/score?username=a&username=b
+            if parsed.path == "/api/score":
+                qs = urllib.parse.parse_qs(parsed.query)
+                usernames = qs.get("username", [])
+                if not usernames:
+                    self._json_response({"error": "Missing ?username= parameter"}, 400)
+                    return
+
+                results = []
+                for u in usernames:
+                    u = u.lstrip("@").strip()
+                    if not u:
+                        continue
+                    data = fetch_user(client, u)
+                    result = score_account(data)
+                    results.append(result)
+
+                self._json_response(results if len(results) != 1 else results[0])
+                return
+
+            # API: /api/health
+            if parsed.path == "/api/health":
+                self._json_response({"status": "ok", "version": VERSION})
+                return
+
+            # Serve static files normally
+            super().do_GET()
+
+        def _json_response(self, data, status=200):
+            body = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", len(body))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format, *args):
+            # Quieter logs
+            if "/api/" in str(args[0]):
+                print(f"  {C_DIM}API: {args[0]}{C_RESET}")
+
+    server = http.server.HTTPServer(("127.0.0.1", port), BuzzerHandler)
+    url = f"http://localhost:{port}/"
+
+    print(f"""
+  {C_BOLD}🐝 Buzzer Score — Server Mode{C_RESET}
+  {C_GREEN}▶ Running at {url}{C_RESET}
+  {C_DIM}API endpoint: {url}api/score?username=xxx{C_RESET}
+  {C_DIM}Press Ctrl+C to stop{C_RESET}
+""")
+
+    # Auto-open browser
+    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print(f"\n  {C_DIM}Server stopped.{C_RESET}")
+        server.server_close()
+
+
 # ─── Main CLI ────────────────────────────────────────────────────────────────
 
 def main():
@@ -742,6 +826,17 @@ Environment:
         help="Twitter Bearer Token (overrides TWITTER_BEARER_TOKEN env var)",
     )
     parser.add_argument(
+        "--server", "-s",
+        action="store_true",
+        help="Start local web server with API + playground",
+    )
+    parser.add_argument(
+        "--port", "-p",
+        type=int,
+        default=8090,
+        help="Port for --server mode (default: 8090)",
+    )
+    parser.add_argument(
         "--version", "-v",
         action="version",
         version=f"buzzer-score {VERSION}",
@@ -765,12 +860,22 @@ Environment:
             print(f"{C_RED}Error: File '{args.batch}' not found{C_RESET}")
             sys.exit(1)
 
+    # Get bearer token
+    bearer_token = args.token or os.environ.get("TWITTER_BEARER_TOKEN")
+
+    # Server mode
+    if args.server:
+        if not bearer_token:
+            print(f"{C_RED}Error: No Twitter Bearer Token provided.{C_RESET}")
+            print(f"Set TWITTER_BEARER_TOKEN env var or use --token flag.")
+            sys.exit(1)
+        run_server(bearer_token, args.port)
+        return
+
     if not usernames:
         parser.print_help()
         sys.exit(1)
 
-    # Get bearer token
-    bearer_token = args.token or os.environ.get("TWITTER_BEARER_TOKEN")
     if not bearer_token:
         print(f"{C_RED}Error: No Twitter Bearer Token provided.{C_RESET}")
         print(f"Set TWITTER_BEARER_TOKEN env var or use --token flag.")
